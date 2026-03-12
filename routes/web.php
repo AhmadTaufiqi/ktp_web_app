@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KtpController;
+use App\Http\Controllers\ServiceController;
 
 /*
 |--------------------------------------------------------------------------
