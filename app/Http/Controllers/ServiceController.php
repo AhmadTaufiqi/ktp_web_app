@@ -10,7 +10,8 @@ class ServiceController extends Controller
 {
     public function ktpIndex()
     {
-        $ktps = Ktp::all();
+        // $ktps = Ktp::all();
+        $ktps = Ktp::paginate();
 
         return response()->json([
             'success' => true,
