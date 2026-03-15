@@ -1,32 +1,5 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sistem KTP - Homepage</title>
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Figtree', sans-serif;
-        }
-        .ktp-card {
-            transition: all 0.3s ease;
-        }
-        .ktp-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-        .bg-pattern {
-            background-color: #0f172a;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e293b' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-    </style>
-</head>
-<body class="bg-pattern min-h-screen">
+@include('layouts/head');
+
     <!-- Navbar -->
     <nav class="bg-white/10 backdrop-blur-md border-b border-white/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,7 +58,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Total Penduduk</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ $totalCount }}</p>
+<p class="text-2xl font-bold text-gray-800 stats-total"></p>
                 </div>
             </div>
             <div class="bg-white rounded-xl shadow-lg p-6 flex items-center">
@@ -96,7 +69,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">KTP Aktif</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ $totalCount }}</p>
+                    <p class="text-2xl font-bold text-gray-800"></p>
                 </div>
             </div>
             <div class="bg-white rounded-xl shadow-lg p-6 flex items-center">
@@ -128,61 +101,61 @@
             </a>
         </div>
 
-        <!-- KTP Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            @foreach($previewData as $ktp)
-            <div class="ktp-card bg-white rounded-xl shadow-lg overflow-hidden">
-                <!-- KTP Header -->
-                <div class="bg-red-600 px-4 py-2 flex items-center justify-between">
-                    <span class="text-white font-bold text-sm">KARTU TANDA PENDUDUK</span>
-                    <span class="text-white/80 text-xs">RI</span>
-                </div>
-                
-                <!-- KTP Content -->
-                <div class="p-4">
-                    <div class="flex gap-4">
-                        <!-- Photo Placeholder -->
-                        <div class="flex-shrink-0">
-                            <div class="w-20 h-24 bg-gray-200 rounded border-2 border-gray-300 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
-                        </div>
-                        
-                        <!-- Data -->
-                        <div class="flex-1 min-w-0">
-                            <div class="space-y-1">
-                                <p class="text-xs text-gray-500">NIK</p>
-                                <p class="text-sm font-mono font-semibold text-gray-800 truncate">{{ $ktp['nik'] }}</p>
-                            </div>
-                            <div class="mt-2">
-                                <p class="text-lg font-bold text-gray-800 truncate">{{ $ktp['nama'] }}</p>
-                            </div>
+        <!-- KTP Preview Template (hidden) -->
+        <div id="ktp-preview-template" style="display: none;" class="ktp-card bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- KTP Header -->
+            <div class="bg-red-600 px-4 py-2 flex items-center justify-between">
+                <span class="text-white font-bold text-sm">KARTU TANDA PENDUDUK</span>
+                <span class="text-white/80 text-xs">RI</span>
+            </div>
+            
+            <!-- KTP Content -->
+            <div class="p-4">
+                <div class="flex gap-4">
+                    <!-- Photo Placeholder -->
+                    <div class="flex-shrink-0">
+                        <div class="w-20 h-24 bg-gray-200 rounded border-2 border-gray-300 flex items-center justify-center photo-placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
                         </div>
                     </div>
                     
-                    <!-- Additional Info -->
-                    <div class="mt-4 pt-3 border-t border-gray-100">
-                        <div class="flex items-start gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            <p class="text-xs text-gray-600 truncate">{{ $ktp['alamat'] }}</p>
+                    <!-- Data -->
+                    <div class="flex-1 min-w-0">
+                        <div class="space-y-1">
+                            <p class="text-xs text-gray-500">NIK</p>
+                            <p class="text-sm font-mono font-semibold text-gray-800 truncate" data-nik></p>
                         </div>
-                        <div class="flex items-center gap-4 mt-2">
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                {{ $ktp['jenis_kelamin'] }}
-                            </span>
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                {{ $ktp['pekerjaan'] }}
-                            </span>
+                        <div class="mt-2">
+                            <p class="text-lg font-bold text-gray-800 truncate" data-nama></p>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Additional Info -->
+                <div class="mt-4 pt-3 border-t border-gray-100">
+                    <div class="flex items-start gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <p class="text-xs text-gray-600 truncate" data-alamat></p>
+                    </div>
+                    <div class="flex items-center gap-4 mt-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800" data-jenis_kelamin></span>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" data-pekerjaan></span>
+                    </div>
+                </div>
             </div>
-            @endforeach
+        </div>
+
+        <!-- KTP Cards Grid Container -->
+        <div id="ktp-preview-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="col-span-full text-center py-12 text-gray-400">
+                <i class="fas fa-spinner fa-spin text-2xl text-blue-400 mb-4 block mx-auto"></i>
+                <p>Memuat preview data KTP...</p>
+            </div>
         </div>
 
         <!-- Show All Button (Mobile) -->
@@ -194,24 +167,54 @@
                 Tampilkan Semua
             </a>
         </div>
+        <!-- Preview KTP Data Loader Script -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                loadPreviewKTPData();
+            });
+
+            function loadPreviewKTPData() {
+                $('#ktp-preview-container').html('<div class="col-span-full text-center py-12"><i class="fas fa-spinner fa-spin text-2xl text-blue-400 mb-4 block mx-auto"></i><p class="text-gray-400">Memuat data...</p></div>');
+
+                $.get('/api/ktp?per_page=4')
+                    .done(function(result) {
+                        if (result.success && result.data.length > 0) {
+                            // Update stats
+                            $('.stats-total').text(result.pagination.total);
+                            // Update KTP Aktif (same as total)
+                            $('.stats-total').closest('.bg-white').next('.bg-white').find('p.text-2xl').text(result.pagination.total);
+
+                            // Render first 4 cards
+                            $('#ktp-preview-container').empty();
+                            result.data.slice(0, 4).forEach(function(ktp) {
+                                const $card = $('#ktp-preview-template').clone().removeAttr('id style').removeClass('hidden');
+                                
+                                // Populate data
+                                $card.find('[data-nik]').text(ktp.nik || 'N/A');
+                                $card.find('[data-nama]').text(ktp.nama || 'N/A');
+                                $card.find('[data-alamat]').text(ktp.alamat || 'N/A');
+                                $card.find('[data-jenis_kelamin]').text(ktp.jenis_kelamin || 'N/A');
+                                $card.find('[data-pekerjaan]').text(ktp.pekerjaan || 'N/A');
+                                
+                                // Photo if available
+                                if (ktp.foto_url) {
+                                    $card.find('.photo-placeholder').html(`<img src="${ktp.foto_url}" alt="Foto KTP" class="w-full h-full object-cover rounded">`);
+                                } else {
+                                    // Keep SVG icon for no photo (already in template)
+                                }
+                                
+                                $('#ktp-preview-container').append($card);
+                            });
+                        } else {
+                            $('#ktp-preview-container').html('<div class="col-span-full text-center py-12 text-gray-400">Belum ada data KTP. <a href="{{ route("ktpCreate") }}" class="text-blue-400 hover:underline font-medium">Tambah data pertama</a></div>');
+                        }
+                    })
+                    .fail(function() {
+                        $('#ktp-preview-container').html('<div class="col-span-full text-center py-12 text-red-400">Gagal memuat data. Silakan coba muat ulang halaman.</div>');
+                    });
+            }
+        </script>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-white/10 backdrop-blur-md border-t border-white/20 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center gap-2 mb-4 md:mb-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span class="text-white font-semibold">Sistem KTP</span>
-                </div>
-                <p class="text-gray-400 text-sm">
-                    © 2024 Sistem Informasi KTP. All rights reserved.
-                </p>
-            </div>
-        </div>
-    </footer>
-</body>
-</html>
+    @include('layouts/foot')
 

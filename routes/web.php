@@ -16,4 +16,6 @@ use App\Http\Controllers\ServiceController;
 */
 
 Route::get('/', [KtpController::class, 'index'])->name('home');
+Route::get('ktpCreate', [KtpController::class, 'create'])->name('ktpCreate');
+Route::post('ktpCreate', [KtpController::class, 'store'])->name('ktp.store');
 Route::get('/ktp/show-all', [KtpController::class, 'showAll'])->name('ktp.showAll');

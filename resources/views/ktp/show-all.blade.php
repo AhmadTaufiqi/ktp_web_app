@@ -1,32 +1,5 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Semua Data KTP - Sistem KTP</title>
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Figtree', sans-serif;
-        }
-        .ktp-card {
-            transition: all 0.3s ease;
-        }
-        .ktp-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-        .bg-pattern {
-            background-color: #0f172a;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e293b' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-    </style>
-</head>
-<body class="bg-pattern min-h-screen">
+@include('layouts/head');
+
     <!-- Navbar -->
     <nav class="bg-white/10 backdrop-blur-md border-b border-white/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,16 +34,35 @@
                 <h1 class="text-3xl md:text-4xl font-bold text-white">Semua Data KTP</h1>
                 <p class="text-gray-400 mt-1">Menampilkan semua data KTP yang terdaftar dalam sistem</p>
             </div>
-            <a href="{{ route('home') }}" class="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-lg font-medium border border-white/30 transition flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Kembali
-            </a>
+            <div class="flex flex-col sm:flex-row gap-3 items-center">
+                <div class="flex-1 max-w-md">
+                    <div class="relative">
+                        <form id="search-form" method="GET" class="flex">
+                            <input id="search-input" type="text" name="name" value="" placeholder="Cari berdasarkan nama..." class="w-full pl-12 pr-12 py-3 bg-white/80 backdrop-blur rounded-xl border border-white/50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg shadow-lg transition-all">
+                            <button type="submit" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600 transition-colors">
+                                <i class="fas fa-search text-xl"></i>
+                            </button>
+                            <a id="clear-search" href="#" style="display:none;" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center">
+                                <i class="fas fa-times text-sm"></i>
+                            </a>
+                        </form>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button id="import-btn" class="bg-purple-500 hover:bg-purple-600 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center gap-1">
+                        <i class="fas fa-upload"></i>
+                        Import
+                    </button>
+                    <a href="{{ route('ktpCreate') }}" class="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-lg font-medium border border-white/30 transition flex items-center gap-1">
+                        <i class="fas fa-plus"></i>
+                        Tambah
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div id="stats-container" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-white rounded-lg p-4 flex items-center">
                 <div class="bg-blue-100 rounded-full p-2 mr-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -79,7 +71,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-gray-500">Total KTP</p>
-                    <p class="text-xl font-bold text-gray-800">{{ count($ktpData) }}</p>
+                    <p class="text-xl font-bold text-gray-800" id="total-ktp">0</p>
                 </div>
             </div>
             <div class="bg-white rounded-lg p-4 flex items-center">
@@ -90,7 +82,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-gray-500">Laki-Laki</p>
-                    <p class="text-xl font-bold text-gray-800">{{ collect($ktpData)->where('jenis_kelamin', 'Laki-Laki')->count() }}</p>
+                    <p class="text-xl font-bold text-gray-800" id="male-count">0</p>
                 </div>
             </div>
             <div class="bg-white rounded-lg p-4 flex items-center">
@@ -101,7 +93,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-gray-500">Perempuan</p>
-                    <p class="text-xl font-bold text-gray-800">{{ collect($ktpData)->where('jenis_kelamin', 'Perempuan')->count() }}</p>
+                    <p class="text-xl font-bold text-gray-800" id="female-count">0</p>
                 </div>
             </div>
             <div class="bg-white rounded-lg p-4 flex items-center">
@@ -117,80 +109,125 @@
             </div>
         </div>
 
-        <!-- All KTP Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @foreach($ktpData as $ktp)
-            <div class="ktp-card bg-white rounded-xl shadow-lg overflow-hidden">
-                <!-- KTP Header -->
-                <div class="bg-red-600 px-4 py-2 flex items-center justify-between">
-                    <span class="text-white font-bold text-sm">KARTU TANDA PENDUDUK</span>
-                    <span class="text-white/80 text-xs">RI</span>
-                </div>
-                
-                <!-- KTP Content -->
-                <div class="p-4">
-                    <div class="flex gap-4">
-                        <!-- Photo Placeholder -->
-                        <div class="flex-shrink-0">
-                            <div class="w-20 h-24 bg-gray-200 rounded border-2 border-gray-300 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
-                        </div>
-                        
-                        <!-- Data -->
-                        <div class="flex-1 min-w-0">
-                            <div class="space-y-1">
-                                <p class="text-xs text-gray-500">NIK</p>
-                                <p class="text-xs font-mono font-semibold text-gray-800 truncate">{{ $ktp['nik'] }}</p>
-                            </div>
-                            <div class="mt-2">
-                                <p class="text-sm font-bold text-gray-800 truncate">{{ $ktp['nama'] }}</p>
-                            </div>
+        <!-- KTP Card Template (hidden) -->
+        <div id="ktp-card-template" style="display: none;" class="ktp-card bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-red-600 px-4 py-2 flex items-center justify-between">
+                <span class="text-white font-bold text-sm">KARTU TANDA PENDUDUK</span>
+                <span class="text-white/80 text-xs">RI</span>
+            </div>
+            <div class="p-4">
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-20 h-24 bg-gray-200 rounded border-2 border-gray-300 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
                         </div>
                     </div>
-                    
-                    <!-- Additional Info -->
-                    <div class="mt-4 pt-3 border-t border-gray-100 space-y-2">
-                        <div class="flex items-start gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            <p class="text-xs text-gray-600 truncate">{{ $ktp['alamat'] }}</p>
+                    <div class="flex-1 min-w-0">
+                        <div class="space-y-1">
+                            <p class="text-xs text-gray-500">NIK</p>
+                            <p class="text-xs font-mono font-semibold text-gray-800 truncate" data-nik></p>
                         </div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                {{ $ktp['jenis_kelamin'] }}
-                            </span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                {{ $ktp['pekerjaan'] }}
-                            </span>
+                        <div class="mt-2">
+                            <p class="text-sm font-bold text-gray-800 truncate" data-nama></p>
                         </div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-gray-100 space-y-2">
+                    <div class="flex items-start gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <p class="text-xs text-gray-600 truncate" data-alamat></p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800" data-jenis_kelamin></span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800" data-pekerjaan></span>
                     </div>
                 </div>
             </div>
-            @endforeach
+        </div>
+
+        <!-- All KTP Cards Grid -->
+        <div id="ktps-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination-container" class="mt-12 flex flex-col sm:flex-row justify-between items-center">
+            <div class="text-sm text-gray-700 mb-4 sm:mb-0" id="pagination-info">
+                Menampilkan <strong>0</strong> - <strong>0</strong> dari <strong>0</strong> data
+            </div>
+            <nav>
+                <ul id="pagination-nav" class="inline-flex items-center -space-x-px rounded-md shadow-sm bg-white/80 backdrop-blur">
+                </ul>
+            </nav>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-white/10 backdrop-blur-md border-t border-white/20 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center gap-2 mb-4 md:mb-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span class="text-white font-semibold">Sistem KTP</span>
+@vite(['resources/js/ktp/show-all.js'])
+
+    <!-- Import Modal -->
+    <div id="import-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Import Data KTP</h3>
+                <p class="text-gray-600">Upload file CSV dengan kolom: nik, nama, alamat, dll.</p>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <input type="file" id="csv-file" accept=".csv" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <div id="file-preview" class="hidden p-4 bg-gray-50 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-file-csv text-green-500 text-xl"></i>
+                            <div>
+                                <p class="font-medium text-gray-900" id="file-name"></p>
+                                <p class="text-sm text-gray-500" id="file-size"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-xs text-gray-500">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-check text-green-500"></i>
+                            NIK (unique)
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-check text-green-500"></i>
+                            Update if exists
+                        </div>
+                    </div>
                 </div>
-                <p class="text-gray-400 text-sm">
-                    © 2024 Sistem Informasi KTP. All rights reserved.
-                </p>
+            </div>
+            <div class="p-6 border-t border-gray-200 bg-gray-50 rounded-b-2xl flex gap-3 justify-end">
+                <button id="cancel-import" class="px-6 py-2 text-gray-700 font-medium rounded-xl hover:bg-gray-100 transition">Batal</button>
+                <button id="confirm-import" class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition disabled:opacity-50" disabled>Import Data</button>
             </div>
         </div>
-    </footer>
-</body>
-</html>
+    </div>
 
+    <!-- Progress Modal -->
+    <div id="progress-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Import Berlangsung...</h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <div>
+                            <p class="font-semibold text-gray-900" id="progress-filename"></p>
+                            <p class="text-sm text-gray-500" id="progress-status">Memulai import...</p>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500 text-center" id="progress-percent">0%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@include('layouts/foot')

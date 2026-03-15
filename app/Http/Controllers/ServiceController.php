@@ -8,14 +8,28 @@ use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-    public function ktpIndex()
+    public function ktpIndex(Request $request)
     {
-        // $ktps = Ktp::all();
-        $ktps = Ktp::paginate();
+        $query = Ktp::query();
+        
+        if ($name = $request->get('name')) {
+            $query->where('nama', 'like', '%' . $name . '%');
+        }
+        
+        $perPage = $request->get('per_page', 12);
+        $ktps = $query->paginate($perPage);
 
         return response()->json([
             'success' => true,
-            'data' => $ktps
+            'data' => $ktps->items(),
+            'pagination' => [
+                'total' => $ktps->total(),
+                'per_page' => $ktps->perPage(),
+                'current_page' => $ktps->currentPage(),
+                'last_page' => $ktps->lastPage(),
+                'from' => $ktps->firstItem(),
+                'to' => $ktps->lastItem(),
+            ]
         ]);
     }
 
@@ -42,5 +56,77 @@ class ServiceController extends Controller
             'message' => 'Data KTP berhasil dibuat',
             'data'    => $ktp
         ], 201);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:10240', // 10MB
+        ]);
+
+        $file = $request->file('csv_file');
+        $importId = uniqid('import_');
+        session(["import_progress_{$importId}" => 0, "import_id" => $importId]);
+
+        // Process async-like with session updates (simulate long task)
+        $handle = fopen($file->getRealPath(), 'r');
+        $header = fgetcsv($handle); // Skip header
+        $totalRows = $this->countCsvRows($file->getRealPath()) - 1;
+        $imported = 0;
+        $errors = [];
+
+        while (($row = fgetcsv($handle)) !== false) {
+            $data = array_combine($header, $row);
+            $data = array_filter($data, fn($v) => $v !== '');
+
+            try {
+                Ktp::updateOrCreate(
+                    ['nik' => $data['nik'] ?? ''],
+                    array_intersect_key($data, array_flip(Ktp::$fillable))
+                );
+                $imported++;
+            } catch (\Exception $e) {
+                $errors[] = "Row: " . implode(',', $row) . " - " . $e->getMessage();
+            }
+
+            $progress = ($imported / $totalRows) * 100;
+            session(["import_progress_{$importId}" => $progress]);
+        }
+
+        fclose($handle);
+
+        session(["import_progress_{$importId}" => 100, "import_result_{$importId}" => [
+            'imported' => $imported,
+            'errors' => $errors
+        ]]);
+
+        return response()->json([
+            'success' => true,
+            'import_id' => $importId
+        ]);
+    }
+
+    private function countCsvRows($path)
+    {
+        $lines = 0;
+        $handle = fopen($path, 'r');
+        while (!feof($handle)) {
+            fgets($handle);
+            $lines++;
+        }
+        fclose($handle);
+        return $lines;
+    }
+
+    public function importProgress($id)
+    {
+        $progress = session("import_progress_{$id}", 0);
+        $result = session("import_result_{$id}", null);
+
+        return response()->json([
+            'progress' => $progress,
+            'result' => $result,
+            'done' => $progress >= 100
+        ]);
     }
 }

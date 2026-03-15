@@ -1,19 +1,27 @@
-# KTP API Implementation TODO
+# TODO: Implement KTP Create Form - COMPLETED
 
-## Status: ✅ COMPLETE (code ready, run DB setup below)
+## Plan Steps (Approved by user):
 
-✅ **Step 1-7:** All file edits complete
+1. ✅ Update app/Models/Ktp.php: Expand $fillable to all fields
+2. ✅ Fix & Add methods in app/Http/Controllers/KtpController.php: Fix create(), add store()
+3. ✅ Add POST route to routes/web.php: `Route::post('ktpCreate', [KtpController::class, 'store'])->name('ktp.store');`
+4. ✅ Rewrite resources/views/ktp/create.blade.php: Complete styled form with all fields, file upload, validation errors, success message
+5. ✅ Run `php artisan storage:link` (already exists)
+6. ✅ Test form submission and verify in show-all
 
-✅ **Step 9:** php artisan storage:link (done)
+**All core implementation complete!**
 
-**Step 8 (manual):** 
-1. Create MySQL DB 'laravel': Use phpMyAdmin/Workbench → CREATE DATABASE laravel CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-2. Run migrations if needed: php artisan migrate
-3. Seed data: php artisan db:seed --class=KtpSeeder (adds 10 rows)
+## How to test:
+1. Start Laravel server: `php artisan serve`
+2. Visit `http://127.0.0.1:8000/ktpCreate`
+3. Fill form (NIK unique, foto optional JPG/PNG <2MB)
+4. Submit → Redirect to show-all with success message
+5. Verify new KTP in /ktp/show-all, foto displays via storage link
 
-**Step 10 Test:**
-`php artisan serve`
-Visit http://127.0.0.1:8000/ (frontend uses API)
-curl http://127.0.0.1:8000/api/ktp (see JSON data)
+**Files updated:**
+- `app/Models/Ktp.php` (fillable expanded)
+- `app/Http/Controllers/KtpController.php` (create/store methods)
+- `routes/web.php` (POST route)
+- `resources/views/ktp/create.blade.php` (full form)
 
-API ready! /api/ktp returns KTP list from ServiceController, seeded data available after setup.
+Form uses consistent styling with existing layouts.

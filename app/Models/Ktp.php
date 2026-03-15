@@ -16,10 +16,17 @@ class Ktp extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
+protected $fillable = [
         'nik',
         'nama',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'jenis_kelamin',
         'alamat',
+        'agama',
+        'status_perkawinan',
+        'pekerjaan',
+        'kewarganegaraan',
         'foto',
     ];
 
@@ -32,11 +39,8 @@ class Ktp extends Model
     public function getFotoUrlAttribute()
     {
         if ($this->foto) {
-            // Mengambil URL lengkap dari folder storage/public
             return asset('storage/' . $this->foto);
         }
-
-        // Return gambar default jika tidak ada foto
-        return asset('images/default-ktp.png');
+        return null;
     }
 }

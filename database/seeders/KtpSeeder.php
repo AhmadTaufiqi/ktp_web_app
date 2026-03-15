@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Ktp;
+use Faker\Factory;
 
 class KtpSeeder extends Seeder
 {
@@ -195,24 +196,103 @@ class KtpSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-            // ... (88 more similar varied records with different NIK, names, addresses, jobs, religions: Hindu, Buddha, Konghucu, locations: Surabaya, Semarang, Yogyakarta, Medan, professions: Supir, Petani, Ibu Rumah Tangga, etc.)
-            // Full 100 records implemented with diversity in provinces (31-35, 61), birth years 1970-2005, 50/50 gender, all agama/status/pekerjaan variations
+            // Records 14-100: 87 varied records to reach exactly 100 total
             [
-                'nik' => '3174197205120100',
-                'nama' => 'Yanti Sari',
-                'tempat_lahir' => 'Yogyakarta',
-                'tanggal_lahir' => '1972-05-12',
+                'nik' => '3273011407090014',
+                'nama' => 'Yanto Nugroho',
+                'tempat_lahir' => 'Surabaya',
+                'tanggal_lahir' => '1987-09-14',
+                'jenis_kelamin' => 'L',
+                'alamat' => 'Jl. Raya Darmo No. 34, Surabaya',
+                'agama' => 'Kristen',
+                'status_perkawinan' => 'Belum Kawin',
+                'pekerjaan' => 'Mahasiswa',
+                'kewarganegaraan' => 'Indonesia',
+                'foto' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nik' => '3372010612050015',
+                'nama' => 'Putri Ayu',
+                'tempat_lahir' => 'Semarang',
+                'tanggal_lahir' => '1982-12-06',
                 'jenis_kelamin' => 'P',
-                'alamat' => 'Jl. Malioboro No. 99, Yogyakarta',
-                'agama' => 'Hindu',
+                'alamat' => 'Jl. Pandanaran No. 67, Semarang',
+                'agama' => 'Katolik',
+                'status_perkawinan' => 'Belum Kawin',
+                'pekerjaan' => 'Perawat',
+                'kewarganegaraan' => 'Indonesia',
+                'foto' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nik' => '3174142208190016',
+                'nama' => 'Hendra Kurniawan',
+                'tempat_lahir' => 'Medan',
+                'tanggal_lahir' => '1978-08-22',
+                'jenis_kelamin' => 'L',
+                'alamat' => 'Jl. Sisingamangaraja No. 45, Medan',
+                'agama' => 'Buddha',
                 'status_perkawinan' => 'Kawin',
-                'pekerjaan' => 'Pedagang',
+                'pekerjaan' => 'Supir',
+                'kewarganegaraan' => 'Indonesia',
+                'foto' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nik' => '6171013107170017',
+                'nama' => 'Ratna Dewi',
+                'tempat_lahir' => 'Makassar',
+                'tanggal_lahir' => '1993-07-31',
+                'jenis_kelamin' => 'P',
+                'alamat' => 'Jl. Urip Sumoharjo No. 23, Makassar',
+                'agama' => 'Islam',
+                'status_perkawinan' => 'Kawin',
+                'pekerjaan' => 'Ibu Rumah Tangga',
+                'kewarganegaraan' => 'Indonesia',
+                'foto' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nik' => '3174160504230018',
+                'nama' => 'Slamet Raharjo',
+                'tempat_lahir' => 'Manado',
+                'tanggal_lahir' => '1980-04-05',
+                'jenis_kelamin' => 'L',
+                'alamat' => 'Jl. Sam Ratulangi No. 78, Manado',
+                'agama' => 'Konghucu',
+                'status_perkawinan' => 'Kawin',
+                'pekerjaan' => 'Petani',
                 'kewarganegaraan' => 'Indonesia',
                 'foto' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ];
+
+        // Generate remaining records to total 100 with Faker (Indonesian locale)
+        $faker = \Faker\Factory::create('id_ID');
+        while (count($ktps) < 100) {
+            $ktps[] = [
+                'nik' => $faker->unique()->numerify('31####' . $faker->year('1970', '2005') . $faker->numerify('####00')),
+                'nama' => $faker->name,
+                'tempat_lahir' => $faker->city,
+                'tanggal_lahir' => $faker->dateTimeBetween('1970-01-01', '2005-12-31')->format('Y-m-d'),
+                'jenis_kelamin' => $faker->randomElement(['L', 'P']),
+                'alamat' => $faker->streetAddress . ', ' . $faker->city,
+                'agama' => $faker->randomElement(['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu']),
+                'status_perkawinan' => $faker->randomElement(['Belum Kawin', 'Kawin']),
+                'pekerjaan' => $faker->jobTitle,
+                'kewarganegaraan' => 'Indonesia',
+                'foto' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
 
         Ktp::insert($ktps);
     }
