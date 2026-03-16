@@ -53,32 +53,40 @@
             @endif
 
             @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-xl mb-8 shadow-md">
+<div class="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-xl mb-8 shadow-md">
                 <ul class="list-disc list-inside space-y-1">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             </div>
+
+            <!-- AJAX Validation Summary -->
+            <div id="ajax-errors" class="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-xl mb-8 shadow-md hidden">
+                <ul id="ajax-error-list" class="list-disc list-inside space-y-1">
+                </ul>
+            </div>
             @endif
 
             <div class="bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl p-10 border border-white/50">
-                <form action="{{ route('ktp.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+<form id="ktp-form" class="space-y-8">
                     @csrf
 
                     <!-- NIK & Nama Row -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
                             <label for="nik" class="block text-sm font-semibold text-gray-700 mb-3">NIK <span class="text-red-500">*</span></label>
-                            <input type="text" name="nik" id="nik" value="{{ old('nik') }}" 
+<input type="text" name="nik" id="nik" value="{{ old('nik') }}" 
                                 class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-lg shadow-sm @error('nik') border-red-500 ring-1 ring-red-500 @enderror"
                                 placeholder="16 digit NIK" maxlength="16">
+                            <span id="nik-error" class="text-sm text-red-600 mt-1 hidden"></span>
                         </div>
                         <div>
                             <label for="nama" class="block text-sm font-semibold text-gray-700 mb-3">Nama Lengkap <span class="text-red-500">*</span></label>
-                            <input type="text" name="nama" id="nama" value="{{ old('nama') }}" 
+<input type="text" name="nama" id="nama" value="{{ old('nama') }}" 
                                 class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-lg shadow-sm @error('nama') border-red-500 ring-1 ring-red-500 @enderror"
                                 placeholder="Masukkan nama lengkap">
+                            <span id="nama-error" class="text-sm text-red-600 mt-1 hidden"></span>
                         </div>
                     </div>
 
@@ -103,7 +111,7 @@
                             <select name="jenis_kelamin" class="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-lg shadow-sm">
                                 <option value="">Pilih jenis kelamin</option>
                                 <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                                <option value="Perempuan" {{ old('perempuan') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+<option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                             </select>
                         </div>
                         <div>
@@ -182,7 +190,7 @@
                         <a href="{{ route('ktp.showAll') }}" class="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-5 px-8 rounded-xl font-semibold text-xl shadow-lg hover:shadow-xl transition-all duration-300 text-center">
                             Batal
                         </a>
-                        <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white py-5 px-8 rounded-xl font-semibold text-xl shadow-lg hover:shadow-xl transition-all duration-300">
+<button type="button" id="submit-btn" class="flex-1 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white py-5 px-8 rounded-xl font-semibold text-xl shadow-lg hover:shadow-xl transition-all duration-300">
                             <span class="flex items-center justify-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -197,38 +205,120 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const fotoInput = document.getElementById('foto');
-    const filenameDiv = document.getElementById('foto-filename');
-    const previewDiv = document.getElementById('foto-preview');
-    const previewImg = document.getElementById('foto-preview-img');
-    const placeholder = document.getElementById('foto-preview-placeholder');
+document.addEventListener("DOMContentLoaded", function() {
 
-    fotoInput.addEventListener('change', function(e) {
+    // Photo preview functionality
+    $('#foto').on('change', function(e) {
         const file = e.target.files[0];
-        if (file) {
-            // Show filename
-            filenameDiv.textContent = file.name;
-            filenameDiv.classList.remove('hidden');
+        const filenameDiv = $('#foto-filename');
+        const previewDiv = $('#foto-preview');
+        const previewImg = $('#foto-preview-img');
+        const placeholder = $('#foto-preview-placeholder');
 
-            // Show preview
+        if (file) {
+            filenameDiv.text(file.name).removeClass('hidden');
             const reader = new FileReader();
             reader.onload = function(e) {
-                previewImg.src = e.target.result;
-                previewDiv.classList.remove('hidden');
-                placeholder.style.display = 'none';
+                previewImg.attr('src', e.target.result);
+                previewDiv.removeClass('hidden');
+                placeholder.hide();
             };
             reader.readAsDataURL(file);
-
-            // Style label
-            e.target.parentElement.classList.add('border-green-400', 'bg-green-50');
+            $('#foto').parent().addClass('border-green-400 bg-green-50');
         } else {
-            // Reset
-            filenameDiv.classList.add('hidden');
-            previewDiv.classList.add('hidden');
-            placeholder.style.display = 'flex';
-            e.target.parentElement.classList.remove('border-green-400', 'bg-green-50');
+            filenameDiv.addClass('hidden');
+            previewDiv.addClass('hidden');
+            placeholder.show();
+            $('#foto').parent().removeClass('border-green-400 bg-green-50');
         }
+    });
+
+    // Client-side validation and AJAX submit
+    $('#submit-btn').on('click', function(e) {
+        e.preventDefault();
+        
+        // Clear previous errors
+        $('.error-span').addClass('hidden').text('');
+        $('#ajax-errors').addClass('hidden');
+        $('input, select, textarea').removeClass('border-red-500 ring-1 ring-red-500');
+
+        let isValid = true;
+        let errors = [];
+
+        // Validate NIK
+        const nik = $('#nik').val().trim();
+        if (!nik) {
+            $('#nik-error').text('NIK wajib diisi').removeClass('hidden');
+            $('#nik').addClass('border-red-500 ring-1 ring-red-500');
+            isValid = false;
+        } else if (nik.length !== 16 || !/^\d{16}$/.test(nik)) {
+            $('#nik-error').text('NIK harus 16 digit angka').removeClass('hidden');
+            $('#nik').addClass('border-red-500 ring-1 ring-red-500');
+            isValid = false;
+        }
+
+        // Validate Nama
+        const nama = $('#nama').val().trim();
+        if (!nama) {
+            $('#nama-error').text('Nama lengkap wajib diisi').removeClass('hidden');
+            $('#nama').addClass('border-red-500 ring-1 ring-red-500');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            return;
+        }
+
+        // Show loading
+        const btn = $(this);
+        const originalText = btn.html();
+        btn.prop('disabled', true).html('<span class="flex items-center justify-center gap-3"><svg class="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25 cx-12 cy-12 r-10 stroke-current stroke-width-4"></circle><path class="opacity-75 fill-current" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...</span>');
+
+        // Prepare FormData
+        const formData = new FormData($('#ktp-form')[0]);
+        const url = '{{ route("ktp.store") }}';
+        const token = $('meta[name="csrf-token"]').attr('content') || formData.get('_token');
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRF-TOKEN': token
+            },
+            success: function(response) {
+                // Show success message and redirect
+                const successDiv = $('<div class="bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-xl mb-8 shadow-md"></div>').html('KTP berhasil ditambahkan!');
+                $('.max-w-4xl.mx-auto > div:first').after(successDiv);
+                setTimeout(() => {
+                    window.location.href = '{{ route("ktp.showAll") }}';
+                }, 1500);
+            },
+            error: function(xhr) {
+                btn.prop('disabled', false).html(originalText);
+
+                if (xhr.status === 422) {
+                    const errors = xhr.responseJSON.errors;
+                    let errorList = '';
+
+                    $.each(errors, function(field, messages) {
+                        const fieldId = '#' + field + '-error';
+                        if ($(fieldId).length) {
+                            $(fieldId).text(messages[0]).removeClass('hidden');
+                            $('#' + field).addClass('border-red-500 ring-1 ring-red-500');
+                        }
+                        errorList += '<li>' + messages[0] + '</li>';
+                    });
+
+                    $('#ajax-error-list').html(errorList);
+                    $('#ajax-errors').removeClass('hidden');
+                } else {
+                    alert('Terjadi kesalahan. Silakan coba lagi.');
+                }
+            }
+        });
     });
 });
 </script>

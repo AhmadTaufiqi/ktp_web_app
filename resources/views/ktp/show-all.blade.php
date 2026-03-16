@@ -118,7 +118,7 @@
             <div class="p-4">
                 <div class="flex gap-4">
                     <div class="flex-shrink-0">
-                        <div class="w-20 h-24 bg-gray-200 rounded border-2 border-gray-300 flex items-center justify-center">
+                        <div class="foto-container w-20 h-24 bg-gray-200 rounded border-2 border-gray-300 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>

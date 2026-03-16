@@ -29,6 +29,20 @@ document.addEventListener("DOMContentLoaded", function() {
                         $card.find('[data-alamat]').text(ktp.alamat || '');
                         $card.find('[data-jenis_kelamin]').text(ktp.jenis_kelamin || '');
                         $card.find('[data-pekerjaan]').text(ktp.pekerjaan || '');
+                        
+                        // Handle foto display
+                        const fotoContainer = $card.find('.foto-container');
+                        if (ktp.foto) {
+                            const fotoUrl = `/storage/${ktp.foto}`;
+                            fotoContainer.html(`<img src="${fotoUrl}" alt="Foto KTP" class="w-full h-full object-cover rounded border-2 border-gray-300">`);
+                        } else {
+                            fotoContainer.html(`
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            `);
+                        }
+                        
                         $('#ktps-container').append($card);
                     });
 
@@ -36,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     updatePagination(pagination);
 
                     // Update current page
-                    currentPage = page;
+                    // currentPage = page;
                 } else {
                     $('#ktps-container').html('<div class="col-span-full text-center py-12 text-gray-500">Tidak ada data ditemukan</div>');
                 }

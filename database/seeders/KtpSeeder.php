@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Ktp;
-use Faker\Factory;
+use Illuminate\Database\Eloquent\WithoutModelEvents;
 
 class KtpSeeder extends Seeder
 {
@@ -13,270 +13,14 @@ class KtpSeeder extends Seeder
      */
     public function run(): void
     {
-        $ktps = [
-            // 100 varied KTP records with full field variation
-            [
-                'nik' => '3174010203050001',
-                'nama' => 'Ahmad Wijaya',
-                'tempat_lahir' => 'Jakarta',
-                'tanggal_lahir' => '2003-02-03',
-                'jenis_kelamin' => 'L',
-                'alamat' => 'Jl. Merdeka No. 10, Jakarta Pusat',
-                'agama' => 'Islam',
-                'status_perkawinan' => 'Belum Kawin',
-                'pekerjaan' => 'Programmer',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3175012304080002',
-                'nama' => 'Siti Nurhaliza',
-                'tempat_lahir' => 'Jakarta',
-                'tanggal_lahir' => '2004-08-23',
-                'jenis_kelamin' => 'P',
-                'alamat' => 'Jl. Sudirman No. 45, Jakarta Selatan',
-                'agama' => 'Islam',
-                'status_perkawinan' => 'Belum Kawin',
-                'pekerjaan' => 'Desainer',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3273011506030003',
-                'nama' => 'Budi Santoso',
-                'tempat_lahir' => 'Bandung',
-                'tanggal_lahir' => '2006-03-15',
-                'jenis_kelamin' => 'L',
-                'alamat' => 'Jl. Asia Afrika No. 20, Bandung',
-                'agama' => 'Islam',
-                'status_perkawinan' => 'Belum Kawin',
-                'pekerjaan' => 'Mahasiswa',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3174015609100004',
-                'nama' => 'Dewi Lestari',
-                'tempat_lahir' => 'Jakarta',
-                'tanggal_lahir' => '2009-10-06',
-                'jenis_kelamin' => 'P',
-                'alamat' => 'Jl. Thamrin No. 78, Jakarta Pusat',
-                'agama' => 'Kristen',
-                'status_perkawinan' => 'Belum Kawin',
-                'pekerjaan' => 'Guru',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3277010101250005',
-                'nama' => 'Rudi Hermawan',
-                'tempat_lahir' => 'Bekasi',
-                'tanggal_lahir' => '2001-01-01',
-                'jenis_kelamin' => 'L',
-                'alamat' => 'Jl. Ahmad Yani No. 33, Bekasi',
-                'agama' => 'Islam',
-                'status_perkawinan' => 'Kawin',
-                'pekerjaan' => 'Wiraswasta',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3175027802200006',
-                'nama' => 'Lisa Amelia',
-                'tempat_lahir' => 'Depok',
-                'tanggal_lahir' => '2002-02-28',
-                'jenis_kelamin' => 'P',
-                'alamat' => 'Jl. Margonda No. 55, Depok',
-                'agama' => 'Katolik',
-                'status_perkawinan' => 'Belum Kawin',
-                'pekerjaan' => 'Dokter',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3174011111220007',
-                'nama' => 'Eko Prasetyo',
-                'tempat_lahir' => 'Jakarta',
-                'tanggal_lahir' => '1985-11-11',
-                'jenis_kelamin' => 'L',
-                'alamat' => 'Jl. Gatot Subroto No. 12, Jakarta Selatan',
-                'agama' => 'Islam',
-                'status_perkawinan' => 'Kawin',
-                'pekerjaan' => 'Insinyur',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3175023333440008',
-                'nama' => 'Rina Susanti',
-                'tempat_lahir' => 'Jakarta',
-                'tanggal_lahir' => '1990-03-03',
-                'jenis_kelamin' => 'P',
-                'alamat' => 'Jl. Palmerah Barat No. 67, Jakarta Barat',
-                'agama' => 'Islam',
-                'status_perkawinan' => 'Kawin',
-                'pekerjaan' => 'Akuntan',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3276015555660009',
-                'nama' => 'Joko Widodo',
-                'tempat_lahir' => 'Surabaya',
-                'tanggal_lahir' => '1988-05-05',
-                'jenis_kelamin' => 'L',
-                'alamat' => 'Jl. Raya Bogor Km 28, Jakarta Timur',
-                'agama' => 'Islam',
-                'status_perkawinan' => 'Kawin',
-                'pekerjaan' => 'Pengusaha',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3174037777880010',
-                'nama' => 'Fitriani',
-                'tempat_lahir' => 'Jakarta',
-                'tanggal_lahir' => '1995-07-07',
-                'jenis_kelamin' => 'P',
-                'alamat' => 'Jl. Fatmawati No. 89, Jakarta Selatan',
-                'agama' => 'Islam',
-                'status_perkawinan' => 'Belum Kawin',
-                'pekerjaan' => 'PNS',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            // Continuing with 90 more varied records...
-            [
-                'nik' => '3174128503050001',
-                'nama' => 'Muhammad Arif',
-                'tempat_lahir' => 'Jakarta',
-                'tanggal_lahir' => '1985-03-05',
-                'jenis_kelamin' => 'L',
-                'alamat' => 'Jl. Thamrin No. 123, Jakarta Pusat',
-                'agama' => 'Islam',
-                'status_perkawinan' => 'Kawin',
-                'pekerjaan' => 'Dokter',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3174139104080011',
-                'nama' => 'Sari Indah',
-                'tempat_lahir' => 'Bandung',
-                'tanggal_lahir' => '1991-04-08',
-                'jenis_kelamin' => 'P',
-                'alamat' => 'Jl. Diponegoro No. 56, Bandung',
-                'agama' => 'Islam',
-                'status_perkawinan' => 'Belum Kawin',
-                'pekerjaan' => 'Guru',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            // Records 14-100: 87 varied records to reach exactly 100 total
-            [
-                'nik' => '3273011407090014',
-                'nama' => 'Yanto Nugroho',
-                'tempat_lahir' => 'Surabaya',
-                'tanggal_lahir' => '1987-09-14',
-                'jenis_kelamin' => 'L',
-                'alamat' => 'Jl. Raya Darmo No. 34, Surabaya',
-                'agama' => 'Kristen',
-                'status_perkawinan' => 'Belum Kawin',
-                'pekerjaan' => 'Mahasiswa',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3372010612050015',
-                'nama' => 'Putri Ayu',
-                'tempat_lahir' => 'Semarang',
-                'tanggal_lahir' => '1982-12-06',
-                'jenis_kelamin' => 'P',
-                'alamat' => 'Jl. Pandanaran No. 67, Semarang',
-                'agama' => 'Katolik',
-                'status_perkawinan' => 'Belum Kawin',
-                'pekerjaan' => 'Perawat',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3174142208190016',
-                'nama' => 'Hendra Kurniawan',
-                'tempat_lahir' => 'Medan',
-                'tanggal_lahir' => '1978-08-22',
-                'jenis_kelamin' => 'L',
-                'alamat' => 'Jl. Sisingamangaraja No. 45, Medan',
-                'agama' => 'Buddha',
-                'status_perkawinan' => 'Kawin',
-                'pekerjaan' => 'Supir',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '6171013107170017',
-                'nama' => 'Ratna Dewi',
-                'tempat_lahir' => 'Makassar',
-                'tanggal_lahir' => '1993-07-31',
-                'jenis_kelamin' => 'P',
-                'alamat' => 'Jl. Urip Sumoharjo No. 23, Makassar',
-                'agama' => 'Islam',
-                'status_perkawinan' => 'Kawin',
-                'pekerjaan' => 'Ibu Rumah Tangga',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nik' => '3174160504230018',
-                'nama' => 'Slamet Raharjo',
-                'tempat_lahir' => 'Manado',
-                'tanggal_lahir' => '1980-04-05',
-                'jenis_kelamin' => 'L',
-                'alamat' => 'Jl. Sam Ratulangi No. 78, Manado',
-                'agama' => 'Konghucu',
-                'status_perkawinan' => 'Kawin',
-                'pekerjaan' => 'Petani',
-                'kewarganegaraan' => 'Indonesia',
-                'foto' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ];
+        // Clear existing data
+        Ktp::truncate();
+        
+        $ktps = [];
 
-        // Generate remaining records to total 100 with Faker (Indonesian locale)
+        // Generate 10k records with Faker (Indonesian locale)
         $faker = \Faker\Factory::create('id_ID');
-        while (count($ktps) < 100) {
+        while (count($ktps) < 10000) {
             $ktps[] = [
                 'nik' => $faker->unique()->numerify('31####' . $faker->year('1970', '2005') . $faker->numerify('####00')),
                 'nama' => $faker->name,
@@ -294,7 +38,15 @@ class KtpSeeder extends Seeder
             ];
         }
 
-        Ktp::insert($ktps);
+        // Insert in chunks to avoid MySQL placeholder limit
+        $chunks = array_chunk($ktps, 1000);
+        foreach ($chunks as $chunk) {
+            Ktp::withoutEvents(function () use ($chunk) {
+                Ktp::insert($chunk);
+            });
+        }
+
+        $this->command->info('✅ 10,000 KTP records seeded successfully!');
     }
 }
 

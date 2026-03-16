@@ -23,4 +23,5 @@ Route::get('/ktp', [ServiceController::class, 'ktpIndex']);
 Route::post('/ktp', [ServiceController::class, 'ktpIndex']);
 Route::post('/ktp/import', [ServiceController::class, 'import']);
 Route::get('/ktp/import/{id}/progress', [ServiceController::class, 'importProgress']);
-// Route::post('/ktp', [ServiceController::class, 'ktpStore']);
+Route::post('/ktp/create', [ServiceController::class, 'ktpStore']);
+Route::post('/ktp/import', [ServiceController::class, 'import']);
