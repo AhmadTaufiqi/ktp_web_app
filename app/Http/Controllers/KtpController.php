@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use App\Models\Ktp;
+use App\Exports\KtpExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\View;
+
 
 class KtpController extends Controller
 {
@@ -62,6 +65,24 @@ class KtpController extends Controller
         Ktp::create($validated);
 
         return redirect()->route('ktp.showAll')->with('success', 'KTP berhasil ditambahkan!');
+    }
+
+    /**
+     * Export KTP data to XLSX (all or filtered).
+     */
+    public function export(Request $request)
+    {
+        $query = Ktp::query();
+        $query->select('nik', 'nama', 'alamat', 'jenis_kelamin', 'pekerjaan', 'agama', 'status_perkawinan', 'kewarganegaraan');
+
+        if ($request->filled('name')) {
+            $query
+            ->where('nama', 'like', '%' . $request->name . '%');
+        }
+
+        $ktps = $query->get();
+
+        return Excel::download(new KtpExport($ktps), 'data-ktp-' . date('Y-m-d-H-i-s') . '.xlsx');
     }
 }
 

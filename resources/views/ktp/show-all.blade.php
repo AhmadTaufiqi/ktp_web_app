@@ -1,32 +1,5 @@
 @include('layouts/head');
 
-    <!-- Navbar -->
-    <nav class="bg-white/10 backdrop-blur-md border-b border-white/20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="flex items-center gap-2">
-                            <a href="{{ route('home') }}" class="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                <span class="text-white font-bold text-xl">Sistem KTP</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="{{ route('home') }}" class="text-gray-300 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Beranda</a>
-                        <a href="#" class="text-white bg-white/10 px-3 py-2 rounded-md text-sm font-medium">Data KTP</a>
-                        <a href="#" class="text-gray-300 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Tentang</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
     <!-- Header Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
@@ -48,6 +21,35 @@
                         </form>
                     </div>
                 </div>
+                @auth
+                <!-- Export button for all users -->
+                <div class="flex gap-2">
+                    <div class="relative group">
+                        <button id="export-btn" class="bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center gap-1 shadow-lg">
+                            <i class="fas fa-download"></i>
+                            Export
+                        </button>
+                        <div id="export-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                            <a href="{{ route('ktp.export') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 border-b border-gray-100">
+                                <i class="fas fa-file-csv text-green-500"></i>
+                                Export All Data (CSV)
+                            </a>
+                            <a href="{{ route('ktp.export.pdf') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 border-b border-gray-100">
+                                <i class="fas fa-file-pdf text-red-500"></i>
+                                Export All Data (PDF)
+                            </a>
+                            <a href="#" id="export-filtered-csv" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 border-b border-gray-100">
+                                <i class="fas fa-file-csv text-blue-500"></i>
+                                Export Filtered Data (CSV)
+                            </a>
+                            <a href="#" id="export-filtered-pdf" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                                <i class="fas fa-file-pdf text-orange-500"></i>
+                                Export Filtered Data (PDF)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @if(auth()->user()->role === 'admin')
                 <div class="flex gap-2">
                     <button id="import-btn" class="bg-purple-500 hover:bg-purple-600 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center gap-1">
                         <i class="fas fa-upload"></i>
@@ -58,54 +60,68 @@
                         Tambah
                     </a>
                 </div>
+                @endif
+                @endauth
             </div>
         </div>
 
-        <!-- Stats -->
-        <div id="stats-container" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white rounded-lg p-4 flex items-center">
-                <div class="bg-blue-100 rounded-full p-2 mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+        <!-- Stats & View Toggle -->
+        <div class="flex flex-col lg:flex-row gap-4 mb-8">
+            <!-- Stats -->
+            <div id="stats-container" class="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1">
+                <div class="bg-white rounded-lg p-4 flex items-center">
+                    <div class="bg-blue-100 rounded-full p-2 mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500">Total KTP</p>
+                        <p class="text-xl font-bold text-gray-800" id="total-ktp">0</p>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-xs text-gray-500">Total KTP</p>
-                    <p class="text-xl font-bold text-gray-800" id="total-ktp">0</p>
+                <div class="bg-white rounded-lg p-4 flex items-center">
+                    <div class="bg-green-100 rounded-full p-2 mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500">Laki-Laki</p>
+                        <p class="text-xl font-bold text-gray-800" id="male-count">0</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 flex items-center">
+                    <div class="bg-pink-100 rounded-full p-2 mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500">Perempuan</p>
+                        <p class="text-xl font-bold text-gray-800" id="female-count">0</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 flex items-center">
+                    <div class="bg-purple-100 rounded-full p-2 mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500">Kota</p>
+                        <p class="text-xl font-bold text-gray-800">3</p>
+                    </div>
                 </div>
             </div>
-            <div class="bg-white rounded-lg p-4 flex items-center">
-                <div class="bg-green-100 rounded-full p-2 mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs text-gray-500">Laki-Laki</p>
-                    <p class="text-xl font-bold text-gray-800" id="male-count">0</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg p-4 flex items-center">
-                <div class="bg-pink-100 rounded-full p-2 mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs text-gray-500">Perempuan</p>
-                    <p class="text-xl font-bold text-gray-800" id="female-count">0</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg p-4 flex items-center">
-                <div class="bg-purple-100 rounded-full p-2 mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs text-gray-500">Kota</p>
-                    <p class="text-xl font-bold text-gray-800">3</p>
-                </div>
+            <!-- View Toggle -->
+            <div class="flex items-center gap-2 bg-white rounded-lg p-3 shadow-md">
+                <button id="view-card-btn" class="p-2 rounded-lg hover:bg-gray-100 transition-all view-toggle-btn active bg-blue-500 text-white">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button id="view-table-btn" class="p-2 rounded-lg hover:bg-gray-100 transition-all view-toggle-btn">
+                    <i class="fas fa-list"></i>
+                </button>
             </div>
         </div>
 
@@ -150,9 +166,29 @@
             </div>
         </div>
 
-        <!-- All KTP Cards Grid -->
-        <div id="ktps-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        </div>
+        <!-- KTP Data Container -->
+        <div id="ktps-container">
+            <!-- Table view (hidden by default) -->
+            <div id="ktps-table" class="hidden">
+                <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Foto</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIK</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Kelamin</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pekerjaan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ktps-tbody" class="bg-white divide-y divide-gray-200">
+                            <!-- Rows populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Cards view (default) -->
 
         <!-- Pagination -->
         <div id="pagination-container" class="mt-12 flex flex-col sm:flex-row justify-between items-center">

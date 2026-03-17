@@ -30,4 +30,33 @@
     </style>
 </head>
 <body class="bg-pattern min-h-screen">
+
+@auth
+<div class="bg-white/5 backdrop-blur border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between py-3">
+            <div class="flex items-center">
+                <span class="text-white font-medium mr-4">Hi, {{ Auth::user()->name }}</span>
+                @if(Auth::user()->role === 'admin')
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                        <i class="fas fa-crown mr-1"></i> Admin
+                    </span>
+                @else
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                        <i class="fas fa-user mr-1"></i> User
+                    </span>
+                @endif
+            </div>
+            <div class="flex items-center space-x-2">
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-red-500/20 transition flex items-center">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endauth
    

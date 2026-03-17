@@ -1,6 +1,12 @@
 document.addEventListener("DOMContentLoaded", function() {
     function loadKtpData(page = 1, name = '') {
-        $('#ktps-container').html('<div class="col-span-full text-center py-12"><i class="fas fa-spinner fa-spin text-2xl text-blue-500 mb-4"></i><p class="text-gray-500">Memuat data...</p></div>');
+        const $loading = $('<div class="col-span-full text-center py-12"><i class="fas fa-spinner fa-spin text-2xl text-blue-500 mb-4"></i><p class="text-gray-500">Memuat data...</p></div>');
+        
+        if (isTableView()) {
+            $('#ktps-table').removeClass('hidden').prepend($loading);
+        } else {
+            $('#ktps-cards').html($loading);
+        }
 
         const params = {
             page: page
@@ -20,44 +26,92 @@ document.addEventListener("DOMContentLoaded", function() {
                     $('#male-count').text(maleCount);
                     $('#female-count').text(femaleCount);
 
-                    // Render cards
-                    $('#ktps-container').empty();
-                    data.forEach(function(ktp) {
-                        const $card = $('#ktp-card-template').clone().removeAttr('id style');
-                        $card.find('[data-nik]').text(ktp.nik || '');
-                        $card.find('[data-nama]').text(ktp.nama || '');
-                        $card.find('[data-alamat]').text(ktp.alamat || '');
-                        $card.find('[data-jenis_kelamin]').text(ktp.jenis_kelamin || '');
-                        $card.find('[data-pekerjaan]').text(ktp.pekerjaan || '');
-                        
-                        // Handle foto display
-                        const fotoContainer = $card.find('.foto-container');
-                        if (ktp.foto) {
-                            const fotoUrl = `/storage/${ktp.foto}`;
-                            fotoContainer.html(`<img src="${fotoUrl}" alt="Foto KTP" class="w-full h-full object-cover rounded border-2 border-gray-300">`);
-                        } else {
-                            fotoContainer.html(`
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            `);
-                        }
-                        
-                        $('#ktps-container').append($card);
-                    });
+                    // Clear loading
+                    $loading.remove();
+
+                    // Render based on view
+                    if (isTableView()) {
+                        renderTable(data);
+                    } else {
+                        renderCards(data);
+                    }
 
                     // Update pagination
                     updatePagination(pagination);
-
-                    // Update current page
-                    // currentPage = page;
                 } else {
-                    $('#ktps-container').html('<div class="col-span-full text-center py-12 text-gray-500">Tidak ada data ditemukan</div>');
+                    if (isTableView()) {
+                        $('#ktps-tbody').html('<tr><td colspan="6" class="px-6 py-12 text-center text-gray-500">Tidak ada data ditemukan</td></tr>');
+                    } else {
+                        $('#ktps-cards').html('<div class="col-span-full text-center py-12 text-gray-500">Tidak ada data ditemukan</div>');
+                    }
                 }
             })
             .fail(function() {
-                $('#ktps-container').html('<div class="col-span-full text-center py-12 text-red-500">Gagal memuat data. Silakan coba lagi.</div>');
+                if (isTableView()) {
+                    $('#ktps-tbody').html('<tr><td colspan="6" class="px-6 py-12 text-center text-red-500">Gagal memuat data. Silakan coba lagi.</td></tr>');
+                } else {
+                    $('#ktps-cards').html('<div class="col-span-full text-center py-12 text-red-500">Gagal memuat data. Silakan coba lagi.</div>');
+                }
             });
+    }
+
+    function renderCards(data) {
+        $('#ktps-cards').empty();
+        data.forEach(function(ktp) {
+            const $card = $('#ktp-card-template').clone().removeAttr('id style');
+            $card.find('[data-nik]').text(ktp.nik || '');
+            $card.find('[data-nama]').text(ktp.nama || '');
+            $card.find('[data-alamat]').text(ktp.alamat || '');
+            $card.find('[data-jenis_kelamin]').text(ktp.jenis_kelamin || '');
+            $card.find('[data-pekerjaan]').text(ktp.pekerjaan || '');
+            
+            // Handle foto
+            const fotoContainer = $card.find('.foto-container');
+            if (ktp.foto) {
+                const fotoUrl = `/storage/${ktp.foto}`;
+                fotoContainer.html(`<img src="${fotoUrl}" alt="Foto KTP" class="w-full h-full object-cover rounded border-2 border-gray-300">`);
+            } else {
+                fotoContainer.html(`
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                `);
+            }
+            
+            $('#ktps-cards').append($card);
+        });
+    }
+
+    function renderTable(data) {
+        let tableHtml = '';
+        data.forEach(function(ktp) {
+            const fotoHtml = ktp.foto ? 
+                `<img src="/storage/${ktp.foto}" alt="Foto" class="w-12 h-16 object-cover rounded">` :
+                '<i class="fas fa-user text-gray-400 text-xl"></i>';
+            tableHtml += `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${fotoHtml}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono">${ktp.nik || ''}</td>
+                    <td class="px-6 py-4 text-sm font-medium">${ktp.nama || ''}</td>
+                    <td class="px-6 py-4 text-sm">${ktp.alamat || ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">${ktp.jenis_kelamin || ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">${ktp.pekerjaan || ''}</td>
+                </tr>
+            `;
+        });
+        $('#ktps-tbody').html(tableHtml);
+    }
+
+    function isTableView() {
+        return localStorage.getItem('ktpViewMode') === 'table';
+    }
+
+    function setTableView(value) {
+        localStorage.setItem('ktpViewMode', value ? 'table' : 'cards');
+        $('#ktps-table').toggleClass('hidden', !value);
+        $('#ktps-cards').toggleClass('hidden', value);
+        $('#view-table-btn').toggleClass('bg-blue-500 text-white', value);
+        $('#view-card-btn').toggleClass('bg-blue-500 text-white', !value);
     }
 
             function updatePagination(pagination) {
@@ -103,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 $('#clear-search').toggle(value.length > 0);
             });
 
-            // Clear search
+// Clear search
             $(document).on('click', '#clear-search', function(e) {
                 e.preventDefault();
                 $('#search-input').val('');
@@ -111,8 +165,43 @@ document.addEventListener("DOMContentLoaded", function() {
                 loadKtpData(1, '');
             });
 
-// Initial load
-            loadKtpData(1, '');
+            // View toggle handlers
+            $(document).on('click', '#view-card-btn', function() {
+                setTableView(false);
+                loadKtpData($('#pagination-nav a.active')?.data('page') || 1, $('#search-input').val());
+            });
+
+            $(document).on('click', '#view-table-btn', function() {
+                setTableView(true);
+                loadKtpData($('#pagination-nav a.active')?.data('page') || 1, $('#search-input').val());
+            });
+
+// Export filtered data CSV
+            $(document).on('click', '#export-filtered-csv', function(e) {
+                e.preventDefault();
+                const nameFilter = $('#search-input').val().trim();
+                const url = new URL(window.location.origin + '/ktp/export');
+                if (nameFilter) {
+                    url.searchParams.append('name', nameFilter);
+                }
+                window.location.href = url.toString();
+            });
+
+            // Export filtered data PDF
+            $(document).on('click', '#export-filtered-pdf', function(e) {
+                e.preventDefault();
+                const nameFilter = $('#search-input').val().trim();
+                const url = new URL(window.location.origin + '/ktp/export-pdf');
+                if (nameFilter) {
+                    url.searchParams.append('name', nameFilter);
+                }
+                window.location.href = url.toString();
+            });
+
+// Initial load with view mode
+            const initialViewTable = isTableView();
+            setTableView(initialViewTable);
+            loadKtpData(1, $('#search-input').val() || ''); // Preserve search on load
         });
 
         // Import functionality
@@ -173,21 +262,25 @@ document.addEventListener("DOMContentLoaded", function() {
                     $('#progress-percent').text(Math.round(data.progress) + '%');
                     $('#progress-status').text(data.done ? 'Selesai!' : `Memproses... ${Math.round(data.progress)}%`);
 
-                    if (data.done) {
+                    if (data.done || data.progress >= 100) {
                         setTimeout(() => {
                             $('#progress-modal').addClass('hidden');
                             if (data.result) {
-                                alert(`Import selesai: ${data.result.imported} baris berhasil${data.result.errors.length ? `, ${data.result.errors.length} error` : ''}`);
+                                alert(`Import selesai: ${data.result.imported || 0} baris berhasil${data.result?.errors?.length ? `, ${data.result.errors.length} error` : ''}`);
+                            } else {
+                                alert('Import selesai!');
                             }
                             loadKtpData(1, $('#search-input').val() || '');
                             currentImportId = null;
-                        }, 1500);
+                        }, 1000);
                     } else {
-                        setTimeout(pollProgress, 500);
+                        setTimeout(pollProgress, 300);
                     }
                 })
                 .fail(function() {
-                    $('#progress-status').text('Error memeriksa progress');
+                    console.error('Progress poll failed:', arguments);
+                    $('#progress-status').text('Error - coba refresh');
+                    setTimeout(pollProgress, 1000);
                 });
         }
         // Close modals on backdrop click

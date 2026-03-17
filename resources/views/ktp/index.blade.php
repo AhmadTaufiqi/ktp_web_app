@@ -1,48 +1,15 @@
 @include('layouts/head');
 
-    <!-- Navbar -->
-    <nav class="bg-white/10 backdrop-blur-md border-b border-white/20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span class="text-white font-bold text-xl">Sistem KTP</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="#" class="text-white hover:bg-white/10 px-3 py-2 rounded-md text-sm font-medium">Beranda</a>
-                        <a href="#" class="text-gray-300 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Data KTP</a>
-                        <a href="#" class="text-gray-300 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Tentang</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
     <!-- Hero Section -->
     <div class="relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="text-center">
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    Sistem Informasi <span class="text-blue-400">KTP Indonesia</span>
+                    Pangkalan Data <span class="text-blue-400">Penduduk Indonesia</span>
                 </h1>
                 <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                    Kelola dan lihat data Kartu Tanda Penduduk dengan mudah dan cepat
+                    Kelola dan export data ktp seluruh indonesia
                 </p>
-                <div class="flex justify-center gap-4">
-                    <a href="#data-ktp" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition">
-                        Lihat Data
-                    </a>
-                    <a href="#" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold border border-white/30 transition">
-                        Tambah Data
-                    </a>
-                </div>
             </div>
         </div>
     </div>
@@ -91,7 +58,6 @@
         <div class="flex items-center justify-between mb-8">
             <div>
                 <h2 class="text-3xl font-bold text-white">Data KTP</h2>
-                <p class="text-gray-400 mt-1">Berikut adalah data KTP yang tersimpan dalam sistem</p>
             </div>
             <a href="{{ route('ktp.showAll') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
