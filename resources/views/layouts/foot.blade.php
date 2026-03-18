@@ -7,6 +7,11 @@
                     </svg>
                     <span class="text-white font-semibold">Sistem KTP</span>
                 </div>
+                @guest
+                    <div class="flex gap-3">
+                        <a href="{{ route('login') }}" class="text-gray-300 hover:text-white px-4 py-1 rounded-lg hover:bg-white/10 font-medium transition">Login</a>
+                    </div>
+                @endguest
                 <p class="text-gray-400 text-sm">
                     © 2024 Sistem Informasi KTP. All rights reserved.
                 </p>

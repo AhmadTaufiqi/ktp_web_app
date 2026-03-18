@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('status_perkawinan')->nullable();
             $table->string('pekerjaan')->nullable();
             $table->string('kewarganegaraan')->nullable();
-            $table->text('foto')->nullable()->default('default.jpg');
+            $table->text('foto')->nullable();
             $table->timestamps();
         });
     }

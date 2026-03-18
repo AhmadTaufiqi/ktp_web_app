@@ -43,4 +43,8 @@ protected $fillable = [
         }
         return null;
     }
+
+    public function getColumns() {
+        return $this->fillable;
+    }
 }

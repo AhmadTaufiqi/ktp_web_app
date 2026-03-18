@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ktp;
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ServiceController extends Controller
 {
@@ -19,6 +21,19 @@ class ServiceController extends Controller
         $perPage = $request->get('per_page', 12);
         $ktps = $query->paginate($perPage);
 
+        // Calculate total stats across all pages
+        $totalMale = Ktp::where('jenis_kelamin', 'L')
+                ->orWhere('jenis_kelamin', 'Laki-Laki')
+                ->count();
+        $totalFemale = Ktp::where('jenis_kelamin', 'P')
+                ->orWhere('jenis_kelamin', 'Perempuan')
+                ->count();
+        $totalCities = Ktp::whereNotNull('alamat')->get()->reduce(function ($carry, $item) {
+            $parts = explode(',', $item->alamat);
+            $city = trim(end($parts));
+            $carry[$city] = true;
+            return $carry;
+        }, []);
         return response()->json([
             'success' => true,
             'data' => $ktps->items(),
@@ -29,6 +44,11 @@ class ServiceController extends Controller
                 'last_page' => $ktps->lastPage(),
                 'from' => $ktps->firstItem(),
                 'to' => $ktps->lastItem(),
+                'stats' => [
+                    'male' => $totalMale,
+                    'female' => $totalFemale,
+                    'cities' => count($totalCities)
+                ]
             ]
         ]);
     }
@@ -60,15 +80,18 @@ class ServiceController extends Controller
 
     public function import(Request $request)
     {
+        $ktp = new Ktp;
         $request->validate([
             'csv_file' => 'required|file|mimes:csv,txt|max:10240', // 10MB
         ]);
 
         $file = $request->file('csv_file');
         $importId = uniqid('import_');
-        session(["import_progress_{$importId}" => 0, "import_id" => $importId]);
+        
+        Cache::put("import_progress_{$importId}", 0, now()->addMinutes(10));
+        Cache::put("import_result_{$importId}", ['imported' => 0, 'errors' => []], now()->addMinutes(10));
 
-        // Process async-like with session updates (simulate long task)
+        // Process async-like with cache updates (real-time progress)
         $handle = fopen($file->getRealPath(), 'r');
         $header = fgetcsv($handle); // Skip header
         $totalRows = $this->countCsvRows($file->getRealPath()) - 1;
@@ -82,7 +105,7 @@ class ServiceController extends Controller
             try {
                 Ktp::updateOrCreate(
                     ['nik' => $data['nik'] ?? ''],
-                    array_intersect_key($data, array_flip(Ktp::$fillable))
+                    array_intersect_key($data, array_flip($ktp->getColumns()))
                 );
                 $imported++;
             } catch (\Exception $e) {
@@ -90,15 +113,16 @@ class ServiceController extends Controller
             }
 
             $progress = ($imported / $totalRows) * 100;
-            session(["import_progress_{$importId}" => $progress]);
+            Cache::put("import_progress_{$importId}", $progress, now()->addMinutes(10));
         }
 
         fclose($handle);
 
-        session(["import_progress_{$importId}" => 100, "import_result_{$importId}" => [
+        Cache::put("import_progress_{$importId}", 100, now()->addMinutes(10));
+        Cache::put("import_result_{$importId}", [
             'imported' => $imported,
             'errors' => $errors
-        ]]);
+        ], now()->addMinutes(1));
 
         return response()->json([
             'success' => true,
@@ -120,13 +144,31 @@ class ServiceController extends Controller
 
     public function importProgress($id)
     {
-        $progress = session("import_progress_{$id}", 0);
-        $result = session("import_result_{$id}", null);
+        $progress = Cache::get("import_progress_{$id}", 0);
+        $result = Cache::get("import_result_{$id}", null);
+        
+        $done = $progress >= 100 || $result !== null;
 
         return response()->json([
-            'progress' => $progress,
+            'progress' => $progress ?? 0,
             'result' => $result,
-            'done' => $progress >= 100
+            'done' => $done
         ]);
+    }
+
+    /**
+     * Delete KTP via API for JS.
+     */
+    public function destroy($nik)
+    {
+        $ktp = Ktp::where('nik', $nik)->firstOrFail();
+
+        if ($ktp->foto) {
+            Storage::disk('public')->delete($ktp->foto);
+        }
+
+        $ktp->delete();
+
+        return response()->json(['success' => true]);
     }
 }
