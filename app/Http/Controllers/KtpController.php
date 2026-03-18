@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Ktp;
-use App\Exports\KtpExport;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -61,7 +60,7 @@ class KtpController extends Controller
     }
 
     /**
-     * Export KTP data to XLSX (all or filtered).
+     * Export KTP data to CSV (comma delimited).
      */
     public function export(Request $request)
     {
@@ -75,7 +74,28 @@ class KtpController extends Controller
 
         $ktps = $query->get();
 
-        return Excel::download(new KtpExport($ktps), 'data-ktp-' . date('Y-m-d-H-i-s') . '.xlsx');
+        $filename = 'data-ktp-' . date('Y-m-d-H-i-s') . '.csv';
+        $handle = fopen('php://memory','r+');
+        fputcsv($handle, ['NIK', 'Nama Lengkap', 'Alamat', 'Jenis Kelamin', 'Pekerjaan', 'Agama', 'Status Perkawinan', 'Kewarganegaraan']);
+        foreach ($ktps as $ktp) {
+            fputcsv($handle, [
+                $ktp->nik,
+                $ktp->nama,
+                $ktp->alamat,
+                $ktp->jenis_kelamin,
+                $ktp->pekerjaan,
+                $ktp->agama,
+                $ktp->status_perkawinan,
+                $ktp->kewarganegaraan
+            ]);
+        }
+        rewind($handle);
+        $csv = stream_get_contents($handle);
+        fclose($handle);
+
+        return response($csv)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', "attachment; filename=\"$filename\"");
     }
 
     /**

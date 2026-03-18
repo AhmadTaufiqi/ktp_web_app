@@ -2,15 +2,10 @@
 
 namespace App\Exports;
 
-use App\Models\Ktp;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithTitle;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class KtpExport implements FromCollection, WithHeadings, WithStyles, WithTitle
+class KtpExport implements FromCollection, WithHeadings
 {
     protected $ktps;
 
