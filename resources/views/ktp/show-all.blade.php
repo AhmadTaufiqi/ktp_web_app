@@ -2,10 +2,10 @@
 
     <!-- Header Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="mb-3">
-                <h1 class="text-3xl md:text-4xl font-bold text-white">Semua Data KTP</h1>
-                <p class="text-gray-400 mt-1">Menampilkan semua data KTP yang terdaftar dalam sistem</p>
-            </div>
+        <div class="mb-3">
+            <h1 class="text-3xl md:text-4xl font-bold text-white">Semua Data KTP</h1>
+            <p class="text-gray-400 mt-1">Menampilkan semua data KTP yang terdaftar dalam sistem</p>
+        </div>
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
             <div class="flex-1 max-w-md me-auto">
                 <div class="relative">
@@ -122,7 +122,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-gray-500">Kota</p>
-<p class="text-xl font-bold text-gray-800" id="kota-count">0</p>
+                    <p class="text-xl font-bold text-gray-800" id="kota-count">0</p>
                 </div>
             </div>
         </div>
@@ -134,7 +134,7 @@
                 @auth
                 @if(auth()->user()->role === 'admin')
                 <div class="flex gap-1">
-                    <a class="edit-ktp p-1 text-blue-200 hover:text-white rounded transition-all flex items-center" title="Edit" data-edit>
+                    <a href="#" class="edit-ktp p-1 text-blue-200 hover:text-white rounded transition-all flex items-center" title="Edit">
                         <i class="fas fa-edit text-xs"></i>
                     </a>
                     <button onclick="deleteKtp('')" class="delete-ktp p-1 text-red-200 hover:text-white rounded transition-all flex items-center" title="Hapus">
@@ -180,12 +180,12 @@
                 </div>
             </div>
         </div>
-    </div>
 
         <!-- All KTP Cards Grid -->
         <div id="ktps-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         </div>
 
+        <!-- Table Container -->
         <div id="table-container" class="hidden mb-12">
             <div class="bg-white/80 backdrop-blur rounded-2xl shadow-2xl border border-white/50 overflow-hidden">
                 <div class="overflow-x-auto">
