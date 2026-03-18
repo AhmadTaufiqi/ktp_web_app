@@ -1,86 +1,49 @@
-@include('layouts/head')
+@include('layouts/head');
 
     <!-- Header Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="mb-3">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+            <div>
                 <h1 class="text-3xl md:text-4xl font-bold text-white">Semua Data KTP</h1>
                 <p class="text-gray-400 mt-1">Menampilkan semua data KTP yang terdaftar dalam sistem</p>
             </div>
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
-            <div class="flex-1 max-w-md me-auto">
-                <div class="relative">
-                    <form id="search-form" method="GET" class="flex">
-                        <input id="search-input" type="text" name="name" value="" placeholder="Cari berdasarkan nama..." class="w-full pl-12 pr-12 py-3 bg-white/80 backdrop-blur rounded-xl border border-white/50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg shadow-lg transition-all">
-                        <button type="submit" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600 transition-colors">
-                            <i class="fas fa-search text-xl"></i>
-                        </button>
-                        <a id="clear-search" href="#" style="display:none;" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center">
-                            <i class="fas fa-times text-sm"></i>
-                        </a>
-                    </form>
-                </div>
-            </div>
-            <div class="flex items-center gap-2 bg-white/10 backdrop-blur rounded-xl p-3 border border-white/30">
-                <label class="toggle-switch relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="view-toggle" class="sr-only peer">
-                    <div class="w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    <span class="ml-3 text-sm font-medium text-white hidden peer-checked:inline">Tabel</span>
-                    <span class="ml-3 text-sm font-medium text-white inline peer-checked:hidden">Kartu</span>
-                </label>
-            </div>
-            @auth
-            <!-- Export button for all users -->
-            <div class="flex gap-2">
-                <div class="relative group">
-                    <button id="export-btn" class="bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center gap-1 shadow-lg">
-                        <i class="fas fa-download"></i>
-                        Export
-                    </button>
-                    <div id="export-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                        <a href="{{ route('ktp.export') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 border-b border-gray-100">
-                            <i class="fas fa-file-csv text-green-500"></i>
-                            Export All Data (CSV)
-                        </a>
-                        <a href="#" id="generate-pdf-btn" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 border-b border-gray-100">
-                            <i class="fas fa-file-pdf text-red-500"></i>
-                            Generate All Data PDF
-                        </a>
-                        @if(session('success') && str_contains(session('success'), 'PDF'))
-                        <a href="{{ route('ktp.pdf.download') }}" class="block px-4 py-3 text-sm text-green-700 bg-green-50 hover:bg-green-100 flex items-center gap-2 border-t border-gray-100 font-semibold">
-                            <i class="fas fa-file-pdf text-green-500"></i>
-                            Download Generated PDF
-                        </a>
-                        @endif
-                        <a href="#" id="export-filtered-csv" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 border-b border-gray-100">
-                            <i class="fas fa-file-csv text-blue-500"></i>
-                            Export Filtered Data (CSV)
-                        </a>
-                        <a href="#" id="export-filtered-pdf" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
-                            <i class="fas fa-file-pdf text-orange-500"></i>
-                            Export Filtered Data (PDF)
-                        </a>
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex-1 max-w-md">
+                    <div class="relative">
+                        <form id="search-form" method="GET" class="flex">
+                            <input id="search-input" type="text" name="name" value="" placeholder="Cari berdasarkan nama..." class="w-full pl-12 pr-12 py-3 bg-white/80 backdrop-blur rounded-xl border border-white/50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg shadow-lg transition-all">
+                            <button type="submit" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600 transition-colors">
+                                <i class="fas fa-search text-xl"></i>
+                            </button>
+                            <a id="clear-search" href="#" style="display:none;" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center">
+                                <i class="fas fa-times text-sm"></i>
+                            </a>
+                        </form>
                     </div>
                 </div>
+                <div class="flex items-center gap-2 bg-white/10 backdrop-blur rounded-xl p-3 border border-white/30">
+                    <label class="toggle-switch relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="view-toggle" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <span class="ml-3 text-sm font-medium text-white hidden peer-checked:inline">Tabel</span>
+                        <span class="ml-3 text-sm font-medium text-white inline peer-checked:hidden">Kartu</span>
+                    </label>
+                </div>
+                <div class="flex gap-2">
+                    <button id="import-btn" class="bg-purple-500 hover:bg-purple-600 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center gap-1">
+                        <i class="fas fa-upload"></i>
+                        Import
+                    </button>
+                    <a href="{{ route('ktpCreate') }}" class="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-lg font-medium border border-white/30 transition flex items-center gap-1">
+                        <i class="fas fa-plus"></i>
+                        Tambah
+                    </a>
+                </div>
             </div>
-            @if(auth()->user()->role === 'admin')
-            <div class="flex gap-2">
-                <button id="import-btn" class="bg-purple-500 hover:bg-purple-600 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center gap-1">
-                    <i class="fas fa-upload"></i>
-                    Import
-                </button>
-            </div>
-            <div class="flex gap-2">
-                <a href="{{ route('ktpCreate') }}" class="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-lg font-medium border border-white/30 transition flex items-center gap-1">
-                    <i class="fas fa-plus"></i>
-                    Tambah
-                </a>
-            </div>
-            @endif
-            @endauth
         </div>
 
-         <!-- Stats -->
-        <div id="stats-container" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-8">
+        <!-- Stats -->
+        <div id="stats-container" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-white rounded-lg p-4 flex items-center">
                 <div class="bg-blue-100 rounded-full p-2 mr-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -122,7 +85,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-gray-500">Kota</p>
-<p class="text-xl font-bold text-gray-800" id="kota-count">0</p>
+                    <p class="text-xl font-bold text-gray-800">3</p>
                 </div>
             </div>
         </div>
@@ -131,20 +94,7 @@
         <div id="ktp-card-template" style="display: none;" class="ktp-card bg-white rounded-xl shadow-lg overflow-hidden">
             <div class="bg-red-600 px-4 py-2 flex items-center justify-between">
                 <span class="text-white font-bold text-sm">KARTU TANDA PENDUDUK</span>
-                @auth
-                @if(auth()->user()->role === 'admin')
-                <div class="flex gap-1">
-                    <a class="edit-ktp p-1 text-blue-200 hover:text-white rounded transition-all flex items-center" title="Edit" data-edit>
-                        <i class="fas fa-edit text-xs"></i>
-                    </a>
-                    <button onclick="deleteKtp('')" class="delete-ktp p-1 text-red-200 hover:text-white rounded transition-all flex items-center" title="Hapus">
-                        <i class="fas fa-trash text-xs"></i>
-                    </button>
-                </div>
-                @else
                 <span class="text-white/80 text-xs">RI</span>
-                @endif
-                @endauth
             </div>
             <div class="p-4">
                 <div class="flex gap-4">
@@ -180,12 +130,12 @@
                 </div>
             </div>
         </div>
-    </div>
 
         <!-- All KTP Cards Grid -->
         <div id="ktps-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         </div>
 
+        <!-- Table View Container -->
         <div id="table-container" class="hidden mb-12">
             <div class="bg-white/80 backdrop-blur rounded-2xl shadow-2xl border border-white/50 overflow-hidden">
                 <div class="overflow-x-auto">

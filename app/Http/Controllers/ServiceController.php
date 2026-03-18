@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ktp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
 class ServiceController extends Controller
@@ -20,6 +21,19 @@ class ServiceController extends Controller
         $perPage = $request->get('per_page', 12);
         $ktps = $query->paginate($perPage);
 
+        // Calculate total stats across all pages
+        $totalMale = Ktp::where('jenis_kelamin', 'L')
+                ->orWhere('jenis_kelamin', 'Laki-Laki')
+                ->count();
+        $totalFemale = Ktp::where('jenis_kelamin', 'P')
+                ->orWhere('jenis_kelamin', 'Perempuan')
+                ->count();
+        $totalCities = Ktp::whereNotNull('alamat')->get()->reduce(function ($carry, $item) {
+            $parts = explode(',', $item->alamat);
+            $city = trim(end($parts));
+            $carry[$city] = true;
+            return $carry;
+        }, []);
         return response()->json([
             'success' => true,
             'data' => $ktps->items(),
@@ -30,6 +44,11 @@ class ServiceController extends Controller
                 'last_page' => $ktps->lastPage(),
                 'from' => $ktps->firstItem(),
                 'to' => $ktps->lastItem(),
+                'stats' => [
+                    'male' => $totalMale,
+                    'female' => $totalFemale,
+                    'cities' => count($totalCities)
+                ]
             ]
         ]);
     }
@@ -135,5 +154,21 @@ class ServiceController extends Controller
             'result' => $result,
             'done' => $done
         ]);
+    }
+
+    /**
+     * Delete KTP via API for JS.
+     */
+    public function destroy($nik)
+    {
+        $ktp = Ktp::where('nik', $nik)->firstOrFail();
+
+        if ($ktp->foto) {
+            Storage::disk('public')->delete($ktp->foto);
+        }
+
+        $ktp->delete();
+
+        return response()->json(['success' => true]);
     }
 }

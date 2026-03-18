@@ -25,3 +25,4 @@ Route::post('/ktp/import', [ServiceController::class, 'import']);
 Route::get('/ktp/import/{id}/progress', [ServiceController::class, 'importProgress']);
 Route::post('/ktp/create', [ServiceController::class, 'ktpStore']);
 Route::post('/ktp/import', [ServiceController::class, 'import']);
+Route::delete('/ktp/delete/{nik}', [ServiceController::class, 'destroy']);

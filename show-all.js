@@ -20,9 +20,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
                     // Update stats
                     $('#total-ktp').text(pagination.total);
-                    $('#male-count').text(pagination.stats.male);
-                    $('#female-count').text(pagination.stats.female);
-                    $('#kota-count').text(pagination.stats.cities);
+                    const maleCount = data.filter(item => item.jenis_kelamin === 'Laki-Laki').length;
+                    const femaleCount = data.filter(item => item.jenis_kelamin === 'Perempuan').length;
+                    $('#male-count').text(maleCount);
+                    $('#female-count').text(femaleCount);
+
                     // Clear containers
                     $('#ktps-container').empty();
                     $('#table-tbody').empty();
@@ -30,10 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (currentView === 'cards') {
                         // Render cards
                         data.forEach(function(ktp) {
-                            
                             const $card = $('#ktp-card-template').clone().removeAttr('id style');
-
-                            $card.find('[data-edit]').attr('href', '/ktp/' + ktp.nik + '/edit' || '');
                             $card.find('[data-nik]').text(ktp.nik || '');
                             $card.find('[data-nama]').text(ktp.nama || '');
                             $card.find('[data-alamat]').text(ktp.alamat || '');
@@ -52,9 +51,6 @@ document.addEventListener("DOMContentLoaded", function() {
                                     </svg>
                                 `);
                             }
-                            
-                            $card.find('.edit-ktp').attr('href', `/ktp/${ktp.nik}/edit`);
-                            $card.find('.delete-ktp').attr('onclick', `deleteKtp('${ktp.nik}')`);
                             
                             $('#ktps-container').append($card);
                         });
@@ -178,9 +174,8 @@ document.addEventListener("DOMContentLoaded", function() {
         loadKtpData(1, '');
     });
 
-    // Toggle handler
+// Toggle handler
     $('#view-toggle').on('change', function() {
-        console.log('change');
         currentView = this.checked ? 'table' : 'cards';
         localStorage.setItem('ktpView', currentView);
         const currentSearch = $('#search-input').val().trim();
@@ -209,20 +204,12 @@ document.addEventListener("DOMContentLoaded", function() {
     loadKtpData(1, '');
 });
 
-// PDF Export
-$('#generate-pdf-btn').on('click', function(e) {
-    e.preventDefault();
-    if (confirm('Generate PDF (max 2000 records)? This will queue in background.')) {
-        window.location.href = '/ktp/export-pdf';
-    }
-});
+    // Import functionality
+    let currentImportId = null;
 
-// Import functionality
-let currentImportId = null;
-
-$('#import-btn').on('click', function() {
-    $('#import-modal').removeClass('hidden');
-});
+    $('#import-btn').on('click', function() {
+        $('#import-modal').removeClass('hidden');
+    });
 
     $('#cancel-import').on('click', function() {
         $('#import-modal').addClass('hidden');
@@ -285,7 +272,7 @@ $('#import-btn').on('click', function() {
                         currentImportId = null;
                     }, 1500);
                 } else {
-                        setTimeout(pollProgress, 500);
+                    setTimeout(pollProgress, 500);
                 }
             })
             .fail(function() {
